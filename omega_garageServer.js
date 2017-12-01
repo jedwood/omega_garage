@@ -1,7 +1,6 @@
 var express = require('express');
 var app = express();
 var omegaGarage = require('./omega_garage');
-var temphum = require('./temphum');
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -14,7 +13,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/getGarageState/:doorIndex', function (req, res) {
-  
+
   var state = omegaGarage.getGarageState(req.params.doorIndex);
   res.send(state);
 });
@@ -22,53 +21,18 @@ app.get('/getGarageState/:doorIndex', function (req, res) {
 app.post('/garageDoorCommand/:doorIndex', function (req, res) {
   //req.params.doorIndex
   console.log("Received request to change the state of the garage door: " + req.params.doorIndex);
-  
+
   omegaGarage.changeGarageState(parseInt(req.params.doorIndex));
-  
+
   res.setHeader('Cache-Control', 'no-cache');
   res.send("Done!");
 });
 
-app.get('/getTemperature', function (req, res) 
-{
-  var obj = {
-    temp: temphum.getTemperature() + " " + temphum.getTempUnits(),
-  }
-  
-  console.log("Responding to a request for the temperature..." + obj.temp);
-  res.json(obj);
-});
-
-app.get('/getHumidity', function (req, res)
-{  
-  var obj = {
-    hum: temphum.getHumidity() + " %RH",
-  }
-  
-  console.log("Responding to a request for the temperature..." + obj.hum);
-  res.json(obj);
-});
-
 app.get('/getAllDetails', function (req, res)
-{  
-  var obj = {
-    temperature: parseInt(temphum.getTemperature()),
-    humidity: parseInt(temphum.getHumidity()),
-    garageStates: omegaGarage.getAllGarageStates()
-  }
-  
-  console.log("Responding to a request for all the details..." + JSON.stringify(obj));
-  res.json(obj);
-});
+{
+  var obj = omegaGarage.getAllGarageStates()
 
-app.get('/getWeatherDetails', function (req, res)
-{  
-  var obj = {
-    temperature: parseInt(temphum.getTemperatureInC()),
-    humidity: parseInt(temphum.getHumidity())
-  }
-  
-  console.log("Responding to a request for the weather details..." + JSON.stringify(obj));
+  console.log("Responding to a request for all the details..." + JSON.stringify(obj));
   res.json(obj);
 });
 
@@ -81,6 +45,6 @@ process.on('SIGINT', function ()
 {
   console.log("Cleaning up pins...");
   omegaGarage.closePins();
-  
+
   process.exit();
 });

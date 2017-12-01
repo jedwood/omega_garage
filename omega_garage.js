@@ -1,8 +1,6 @@
 var method = omegaGarage.prototype;
 var GPIOHelper = require('./gpiohelper');
-var emailClient = require('./emailClient');
-var temphum = require('./temphum');
-var camera = require('./camera');
+var https = require('https');
 
 relaysStates = [0, 0];
 config = {};
@@ -10,7 +8,7 @@ garageDoorsLength = 0;
 myGPIO = new GPIOHelper();
 
 function omegaGarage() {
-  
+
 }
 
 omegaGarage.prototype.init = function()
@@ -18,22 +16,18 @@ omegaGarage.prototype.init = function()
   try
   {
     loadConfigFile();
-    
+
     garageDoorsLength = config.garageDoors.length;
-    
+
     for(var i = 0; i < garageDoorsLength; i++)
     {
       console.log("Creating relay for " + config.garageDoors[i].garageName + " garage on pin: " + config.garageDoors[i].relayPin);
       myGPIO.setPinSync(config.garageDoors[i].relayPin, 0);
-      
+
       console.log("Creating sensor input for " + config.garageDoors[i].garageName + " garage on pin: " + config.garageDoors[i].sensorPin);
       myGPIO.setPinSync(config.garageDoors[i].sensorPin);
     }
-    
-    emailClient.init(config.UserEmail, config.UserPassword, config.RecipientEmail, config.EmailHost);
-    
-    temphum.init(config.TempSensorEnabled, config.TempSensorOffset);
-    camera.init(config.CameraEnabled);
+
     setInterval(beginStateUpdates, 5000);
   }
   catch(e)
@@ -51,7 +45,7 @@ omegaGarage.prototype.getGarageState = function(garageDoorIndex)
       strResult = "OPEN";
     else
       strResult = "CLOSED";
-    
+
     console.log("The " + config.garageDoors[garageDoorIndex].garageName + " garage is " + strResult);
     return strResult;
   }
@@ -67,15 +61,15 @@ omegaGarage.prototype.changeGarageState = function(garageDoorIndex)
   try
   {
     console.log("Changing the state of the " + config.garageDoors[garageDoorIndex].garageName + " garage.");
-    
+
     this.setRelayState(garageDoorIndex, 1);
-    
+
     var obj = this;
     setTimeout(function()
     {
       obj.setRelayState(garageDoorIndex, 0);
     }, 1000);
-    
+
   }
   catch(e)
   {
@@ -89,7 +83,7 @@ omegaGarage.prototype.closePins = function()
   {
     console.log("Closing relay pin: " + config.garageDoors[i].relayPin);
     myGPIO.closepin(config.garageDoors[i].relayPin);
-    
+
     console.log("Closing sensor pin: " + config.garageDoors[i].sensorPin);
     myGPIO.closepin(config.garageDoors[i].sensorPin);
   }
@@ -103,10 +97,10 @@ omegaGarage.prototype.setRelayState = function(garageDoorIndex, value)
 omegaGarage.prototype.getAllGarageStates = function()
 {
   var obj = [];
-  
+
   for(var i = 0; i < garageDoorsLength; i++)
     obj.push(relaysStates[i]);
-  
+
   return obj;
 }
 
@@ -140,32 +134,22 @@ function updateGarageState(garageDoorIndex)
   try
   {
     console.log("Updating garage door states");
-    
+
     var result = myGPIO.getPinSync(config.garageDoors[garageDoorIndex].sensorPin);
 
     if(result != relaysStates[garageDoorIndex])//If the state of the garage has changed, then notify the user.
     {
-      var state = "";
-      if(result == 0)
-        state = " garage is now open";
-      else
-        state = " garage is now closed";
-      
-      camera.takePicture(doneTakingPicture);
-      
-      function doneTakingPicture(didCapture)
-      {
-        var subject = config.garageDoors[garageDoorIndex].garageName + state;
-        var message = "The " + config.garageDoors[garageDoorIndex].garageName + state;
-        
-        if(didCapture)
-          emailClient.sendEmail(subject, message, "/root/garageImage.jpg");
-        else
-          emailClient.sendEmail(subject, message, null);
+
+      var humanResult = result == 0 ? "opened" : "closed";
+      var doorName = config.garageDoors[garageDoorIndex].garageName
+
+      if (config.webhook) {
+        //just fire it and forget it
+        https.get(config.webhook + '?value1=' + doorName + '&value2=' + humanResult, null);
       }
     }
-    
-    relaysStates[garageDoorIndex] = result;    
+
+    relaysStates[garageDoorIndex] = result;
   }
   catch(e)
   {

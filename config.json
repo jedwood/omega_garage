@@ -11,11 +11,5 @@
       "sensorPin": 23
     }
   ],
-  "UserEmail": "YOUR_EMAIL",
-  "UserPassword": "YOUR_PASSWORD",
-  "RecipientEmail": "RECIPIENT_EMAIL",
-  "EmailHost": "SMTP_EMAIL_HOST",
-  "TempSensorEnabled": false,
-  "TempSensorOffset": 0,
-  "CameraEnabled": false
+  "webhook": "https://maker.ifttt.com/trigger/garage/with/key/YOUR_KEY/"
 }
