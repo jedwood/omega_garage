@@ -61,7 +61,7 @@ Mainly designed for use with two wire garage door openers. I have found that som
 
 3.Manuallly Clone the omega garage repo into your home directory
 
-  ```git clone https://github.com/JimJamUrCode/omega_garage.git /root/omega_garage```
+  ```git clone https://github.com/jedwood/omega_garage.git /root/omega_garage```
 
 4. Move the config file to your home directory
 
@@ -93,16 +93,50 @@ Mainly designed for use with two wire garage door openers. I have found that som
  * You must get a copy of express for node. Follow the instructions in the guide here: https://community.onion.io/topic/855/nodejs-express-http-server/2. I have included a version in the repo that is working for me.
  
 # HomeBridge Compatibility
-* I have added homebridge compatibility by using this homebridge plugin:https://www.npmjs.com/package/homebridge-advanced-http-temperature-humidity
-  * The "accessories" section of your homebridge config file would look something like this: 
-  
-  "accessories": [
-      {
-        "accessory": "AdvancedHttpTemperatureHumidity",
-        "name": "Temperature and Humidity",
-        "url": "http://192.168.1.45:3000/getWeatherDetails",
-        "disableHumidity": false,
-        "http_method": "GET"
-      }
-    ],
-    
+* For now I'm using just using a garage door plugin that is working great for my actual garage doors: https://github.com/washcroft/homebridge-http-garagedoorcontroller with the "generic API" config option.
+
+Here's what my config looks like:
+
+```
+{
+"accessory": "HttpGarageDoorController",
+"name": "Sliding Door",
+"lightName": false,
+"doorOperationSeconds": 2,
+"httpHost": "YOUR-LOCAL-IPADDRESS-HERE",
+"httpPort": 3000,
+"httpSsl": false,
+"httpStatusPollMilliseconds": 4000,
+"httpRequestTimeoutMilliseconds": 10000,
+"httpHeaderName": "X-API-Key",
+"httpHeaderValue": "MyAPIKey",
+"oauthAuthentication": false,
+"oauthSignatureMethod": "HMAC-SHA256",
+"oauthConsumerKey": "MyOAuthConsumerKey",
+"oauthConsumerSecret": "MyOAuthConsumerSecret",
+"oauthToken": "MyOAuthToken",
+"oauthTokenSecret": "MyOAuthTokenSecret",
+"apiConfig":
+{
+"apiType": "Generic",
+"doorOpenMethod": "POST",
+"doorOpenUrl": "/doorlockCommand/0",
+"doorOpenSuccessContent": "Done!",
+"doorCloseMethod": "POST",
+"doorCloseUrl": "/doorlockCommand/0",
+"doorCloseSuccessContent": "Done!",
+"doorStateMethod": "GET",
+"doorStateUrl":"/getDoorlockState/0",
+"lightOnMethod": "GET",
+"lightOnUrl":"/controller/light/on",
+"lightOnSuccessContent": "OK",
+"lightOffMethod": "GET",
+"lightOffUrl":"/controller/light/off",
+"lightOffSuccessContent": "OK",
+"lightStateMethod": "GET",
+"lightStateUrl":"/controller/light/status"
+}
+}
+```
+
+None of the light stuff is used, but when I initially tried to pull it out it threw errors. Someday I might find (or create) a more specific plugin.
