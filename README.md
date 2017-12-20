@@ -22,7 +22,7 @@ Mainly designed for use with two wire garage door openers. I have found that som
 
 3.Manuallly Clone the omega garage repo into /tmp/omega_garage
 
-  ```git clone https://github.com/JimJamUrCode/omega_garage.git /tmp/omega_garage```
+  ```git clone https://github.com/jedwood/omega_garage.git /tmp/omega_garage```
 
 4. Move the config file to your home directory
 
