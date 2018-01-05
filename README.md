@@ -57,7 +57,7 @@ Mainly designed for use with two wire garage door openers. I have found that som
 
   ```opkg update```
 
-  ```opkg install git git-http```
+  ```opkg install git git-http ca-bundle```
 
 3.Manuallly Clone the omega garage repo into your home directory
 
@@ -93,16 +93,16 @@ Mainly designed for use with two wire garage door openers. I have found that som
  * You must get a copy of express for node. Follow the instructions in the guide here: https://community.onion.io/topic/855/nodejs-express-http-server/2. I have included a version in the repo that is working for me.
  
 # HomeBridge Compatibility
-* For now I'm using just using a garage door plugin that is working great for my actual garage doors: https://github.com/washcroft/homebridge-http-garagedoorcontroller with the "generic API" config option.
+* I've had success with: https://github.com/washcroft/homebridge-http-garagedoorcontroller using the "generic API" config option. YMMV.
 
 Here's what my config looks like:
 
 ```
 {
 "accessory": "HttpGarageDoorController",
-"name": "Sliding Door",
+"name": "Car",
 "lightName": false,
-"doorOperationSeconds": 2,
+"doorOperationSeconds": 14,
 "httpHost": "YOUR-LOCAL-IPADDRESS-HERE",
 "httpPort": 3000,
 "httpSsl": false,
@@ -120,13 +120,13 @@ Here's what my config looks like:
 {
 "apiType": "Generic",
 "doorOpenMethod": "POST",
-"doorOpenUrl": "/doorlockCommand/0",
+"doorOpenUrl": "/garageDoorCommand/0",
 "doorOpenSuccessContent": "Done!",
 "doorCloseMethod": "POST",
-"doorCloseUrl": "/doorlockCommand/0",
+"doorCloseUrl": "/garageDoorCommand/0",
 "doorCloseSuccessContent": "Done!",
 "doorStateMethod": "GET",
-"doorStateUrl":"/getDoorlockState/0",
+"doorStateUrl":"/getGarageState/0",
 "lightOnMethod": "GET",
 "lightOnUrl":"/controller/light/on",
 "lightOnSuccessContent": "OK",
@@ -138,5 +138,3 @@ Here's what my config looks like:
 }
 }
 ```
-
-None of the light stuff is used, but when I initially tried to pull it out it threw errors. Someday I might find (or create) a more specific plugin.
