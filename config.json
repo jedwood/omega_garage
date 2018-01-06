@@ -1,14 +1,14 @@
 {
   "garageDoors": [
     {
-      "relayPin": 6,
+      "relayPin": 18,
       "garageName": "Main",
-      "sensorPin": 26
+      "sensorPin": 2
     },
     {
-      "relayPin": 7,
+      "relayPin": 19,
       "garageName": "Secondary",
-      "sensorPin": 23
+      "sensorPin": 3
     }
   ],
   "webhook": "https://maker.ifttt.com/trigger/garage/with/key/YOUR_KEY/"
