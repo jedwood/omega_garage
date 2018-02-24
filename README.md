@@ -18,7 +18,7 @@ Mainly designed for use with two wire garage door openers. I have found that som
 
   ```opkg update```
 
-  ```opkg install git git-http ca-bundle```
+  ```opkg install git git-http```
 
 3.Manuallly Clone the omega garage repo into /tmp/omega_garage
 
